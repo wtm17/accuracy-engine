@@ -4,11 +4,16 @@
   "description": "An engine for computing accuracy",
   "main": "src/index.js",
   "scripts": {
+    "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Billy Meyers",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "lodash": "^4.17.15",
     "mqtt": "^3.0.0"
   }
 }

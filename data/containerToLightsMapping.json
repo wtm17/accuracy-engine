@@ -1,0 +1,92 @@
+[
+  {
+    "lightPos": 1,
+    "container": 11,
+    "min": 0,
+    "max": 18
+  },
+  {
+    "lightPos": 2,
+    "container": 12,
+    "min": 19,
+    "max": 37
+  },
+  {
+    "lightPos": 3,
+    "container": 13,
+    "min": 38,
+    "max": 56
+  },
+  {
+    "lightPos": 4,
+    "container": 14,
+    "min": 57,
+    "max": 75
+  },
+  {
+    "lightPos": 5,
+    "container": 15,
+    "min": 76,
+    "max": 94
+  },
+  {
+    "lightPos": 6,
+    "container": 10,
+    "min": 95,
+    "max": 113
+  },
+  {
+    "lightPos": 7,
+    "container": 9,
+    "min": 114,
+    "max": 132
+  },
+  {
+    "lightPos": 8,
+    "container": 8,
+    "min": 133,
+    "max": 151
+  },
+  {
+    "lightPos": 9,
+    "container": 7,
+    "min": 152,
+    "max": 170
+  },
+  {
+    "lightPos": 10,
+    "container": 6,
+    "min": 171,
+    "max": 189
+  },
+  {
+    "lightPos": 11,
+    "container": 1,
+    "min": 190,
+    "max": 208
+  },
+  {
+    "lightPos": 12,
+    "container": 2,
+    "min": 209,
+    "max": 227
+  },
+  {
+    "lightPos": 13,
+    "container": 3,
+    "min": 228,
+    "max": 246
+  },
+  {
+    "lightPos": 14,
+    "container": 4,
+    "min": 247,
+    "max": 265
+  },
+  {
+    "lightPos": 15,
+    "container": 5,
+    "min": 266,
+    "max": 284
+  }
+]
