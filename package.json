@@ -1,0 +1,14 @@
+{
+  "name": "accuracy-engine",
+  "version": "1.0.0",
+  "description": "An engine for computing accuracy",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Billy Meyers",
+  "license": "ISC",
+  "dependencies": {
+    "mqtt": "^3.0.0"
+  }
+}
