@@ -85,7 +85,7 @@ class OrderChecker {
    * Publishes lights array to the client.
    */
   publishLightsArray() {
-    console.log('publishing lights array', this.lightArray);
+    console.log('publishing lights array');
     this.client.publish('lights/control', JSON.stringify(this.lightArray));
   }
 }
