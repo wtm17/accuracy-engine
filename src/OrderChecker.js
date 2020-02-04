@@ -4,19 +4,19 @@ const OFF = [0, 0, 0];
 const ON = [255, 255, 255];
 
 const CONTAINER_TO_LIGHTS_MAPPING = require('../data/containerToLightsMapping.json');
-const INGREDIENT_TO_COTAINER_MAPPING = require('../data/ingredientToContainerMapping.json');
 
 /**
  * Class for keeping track of the accuracy of the order.
  */
 class OrderChecker {
-  constructor(req, client) {
+  constructor(req, client, ingredientToContainerMapping) {
     this.referenceId = req.referenceId;
     this.ingredients = req.ingredients;
     this.addedIngredients = [];
     this.lightArray = _.fill(Array(LIGHTS_SIZE), OFF);
     this.untrackedIngredients = [];
     this.client = client;
+    this.ingredientToContainerMapping = ingredientToContainerMapping;
     this.init();
   }
   /**
@@ -34,7 +34,7 @@ class OrderChecker {
    * @param {*} value 
    */
   controlIngredientLights(ingredient, value) {
-    const container = _.find(INGREDIENT_TO_COTAINER_MAPPING, {
+    const container = _.find(this.ingredientToContainerMapping, {
       ingredient: ingredient.name,
     });
     if (container) {

@@ -10,6 +10,7 @@ const client = mqtt.connect(MQTT_URL)
 client.on('connect', function () {
   console.log('connected to', MQTT_URL);
   client.subscribe('ingredient/pulled');
+  client.subscribe('ingredient/setup');
 })
  
 client.on('message', function (topic, message) {
@@ -17,6 +18,8 @@ client.on('message', function (topic, message) {
   const messageStr = message.toString();
   if (topic === 'ingredient/pulled') {
     orderManager.addIngredient(JSON.parse(messageStr));
+  } else if (topic === 'ingredient/setup') {
+    orderManager.updateIngredientToContainerMapping(JSON.parse(messageStr));
   }
 })
 

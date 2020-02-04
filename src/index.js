@@ -28,6 +28,14 @@ app.post('/ingredient/add', (req, res) => {
   res.json({success: true})
 })
 /**
+ * Endpoint to setup ingredients
+ */
+app.post('/ingredient/setup', (req, res) => {
+  console.log('ingredient setup body', req.body);
+  orderManager.updateIngredientToContainerMapping(req.body);
+  res.json({success: true})
+})
+/**
  * Endpoint to finish order.
  */
 app.post('/order/finish', (req, res) => {
