@@ -61,20 +61,24 @@ class OrderChecker {
     const ingredientToAdd = {
       name: ingredient.ingredient,
     }
-    this.addedIngredients.push(ingredientToAdd);
-    if (this.buildContainsIngredient(ingredientToAdd)) {
-      this.controlIngredientLights(ingredientToAdd, OFF);
+    if (this.isIngredientAlreadyAdded(ingredientToAdd)) {
+      console.log('Ingredient already added', ingredientToAdd.name);
     } else {
-      // Indicate that the ingredient is incorrect
-      console.log('Incorrect ingredient added', ingredientToAdd.name);
-      this.controlIngredientLights(ingredientToAdd, WRONG);
-      // Turn off incorrect light after timeout
-      setTimeout(() => {
+      this.addedIngredients.push(ingredientToAdd);
+      if (this.buildContainsIngredient(ingredientToAdd)) {
         this.controlIngredientLights(ingredientToAdd, OFF);
-        this.publishLightsArray();
-      }, WRONG_SIGNAL_TIMEOUT);
+      } else {
+        // Indicate that the ingredient is incorrect
+        console.log('Incorrect ingredient added', ingredientToAdd.name);
+        this.controlIngredientLights(ingredientToAdd, WRONG);
+        // Turn off incorrect light after timeout
+        setTimeout(() => {
+          this.controlIngredientLights(ingredientToAdd, OFF);
+          this.publishLightsArray();
+        }, WRONG_SIGNAL_TIMEOUT);
+      }
+      this.publishLightsArray();
     }
-    this.publishLightsArray();
   }
   /**
    * Turns off all lights.
@@ -98,6 +102,15 @@ class OrderChecker {
    */
   buildContainsIngredient(ingredient) {
     return _.some(this.ingredients, (ing) => {
+      return ing.name === ingredient.name;
+    });
+  }
+  /**
+   * Checks whether or not the ingredient has already been added to the current build.
+   * @param {*} ingredient 
+   */
+  isIngredientAlreadyAdded(ingredient) {
+    return _.some(this.addedIngredients, (ing) => {
       return ing.name === ingredient.name;
     });
   }
