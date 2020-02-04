@@ -18,20 +18,22 @@ let currentOrder;
 console.log('connecing to', mqttUrl)
 const client = mqtt.connect(mqttUrl)
 
-client.on('connect', function () {
-  console.log('connected to', mqttUrl);
-  client.subscribe('presence', function (err) {
-    if (!err) {
-      client.publish('presence', 'hello mqqt')
-    } else {
-      console.error(err);
-    }
-  })
+client.on('connect', function (err) {
+  if (!err) {
+    console.log('connected to', mqttUrl);
+    client.subscribe('ingredient/pulled');
+  } else {
+    console.err(err);
+  }
 })
  
 client.on('message', function (topic, message) {
   // message is Buffer
-  console.log(message.toString())
+  if (topic === 'ingredient/pulled') {
+    if (currentOrder) {
+      currentOrder.addIngredient(JSON.parse(message.toString()));
+    }
+  }
   //client.end()
 })
 
@@ -63,10 +65,19 @@ app.post('/order/start', (req, res) => {
   currentOrder.generateLightsArray();
   res.json({success: true})
 })
+app.post('/ingredient/add', (req, res) => {
+  console.log('ingredient add body', req.body);
+  if (currentOrder) {
+    currentOrder.addIngredient(req.body);
+  }
+  res.json({success: true})
+})
 app.post('/order/finish', (req, res) => {
   console.log('finish body', req.body);
-  currentOrder.clearLights();
-  res.json({success: true})
+  if (currentOrder) {
+    currentOrder.clearLights();
+  }
+  res.json(currentOrder.checkAccuracy())
 })
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
@@ -75,38 +86,62 @@ class Order {
   constructor(req) {
     this.referenceId = req.referenceId;
     this.ingredients = req.ingredients;
+    this.addedIngredients = [];
+    this.lightArray = _.fill(Array(LIGHTS_SIZE), OFF);
+    this.untrackedIngredients = [];
   }
 
   generateLightsArray() {
-    const lightArray = _.fill(Array(LIGHTS_SIZE), OFF);
     for (const ingredient of this.ingredients) {
-      const container = _.find(INGREDIENT_TO_COTAINER_MAPPING, {
-        ingredient: ingredient.name,
-      });
-      if (container) {
-        console.log('Found', ingredient.name, 'in container', container.container);
-        const lightsRange = _.find(CONTAINER_TO_LIGHTS_MAPPING, {
-          container: container.container,
-        });
-        if (lightsRange) {
-          console.log('Container', container.container, 'is marked by lights', lightsRange.min, '-', lightsRange.max);
-          _.fill(lightArray, ON, lightsRange.min, lightsRange.max + 1);
-        }
-      } else {
-        console.log('Could not find container for', ingredient.name);
-      }
+      this.fillLightArray(ingredient, ON);
     }
-    console.log('lights array', lightArray);
-    this.publishLightsArray(lightArray);
+    this.publishLightsArray();
+  }
+
+  fillLightArray(ingredient, value) {
+    const container = _.find(INGREDIENT_TO_COTAINER_MAPPING, {
+      ingredient: ingredient.name,
+    });
+    if (container) {
+      const lightsRange = _.find(CONTAINER_TO_LIGHTS_MAPPING, {
+        container: container.container,
+      });
+      if (lightsRange) {
+        console.log('Turn', value === ON ? 'ON' : 'OFF', ingredient.name, 'in container', container.container, '(min:', lightsRange.min, 'max:', lightsRange.max, ')');
+        _.fill(this.lightArray, value, lightsRange.min, lightsRange.max + 1);
+      }
+    } else {
+      console.log('Could not find container for', ingredient.name);
+      this.untrackedIngredients.push(ingredient);
+    }
+  }
+
+  addIngredient(ingredient) {
+    const ingredientToAdd = {
+      name: ingredient.ingredient,
+    }
+    this.addedIngredients.push(ingredientToAdd);
+    this.fillLightArray(ingredientToAdd, OFF);
+    this.publishLightsArray();
   }
 
   clearLights() {
-    const lightArray = _.fill(Array(LIGHTS_SIZE), OFF);
-    console.log('lights array', lightArray);
-    this.publishLightsArray(lightArray);
+    this.lightArray = _.fill(Array(LIGHTS_SIZE), OFF);
+    this.publishLightsArray();
   }
 
-  publishLightsArray(arr) {
-    client.publish('lights/control', JSON.stringify(arr));
+  checkAccuracy() {
+    let missingIngredients =  _.differenceBy(this.ingredients, this.addedIngredients, 'name');
+    // Remove untracked ingredients
+    missingIngredients = _.differenceBy(missingIngredients, this.untrackedIngredients, 'name');
+    return {
+      missedIngredients: missingIngredients,
+      wrongIngredients: _.differenceBy(this.addedIngredients, this.ingredients, 'name'),
+    };
+  }
+
+  publishLightsArray() {
+    console.log('lights array', this.lightArray);
+    client.publish('lights/control', JSON.stringify(this.lightArray));
   }
 }
