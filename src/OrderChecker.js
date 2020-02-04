@@ -20,6 +20,7 @@ class OrderChecker {
     this.client = client;
     this.ingredientToContainerMapping = ingredientToContainerMapping;
     this.init();
+    this.client.publish('order/start', JSON.stringify(this.ingredients));
   }
   /**
    * Turns on the corresponding lights for each ingredient.
@@ -86,6 +87,7 @@ class OrderChecker {
   shutdown() {
     this.lightArray = _.fill(Array(LIGHTS_SIZE), OFF);
     this.publishLightsArray();
+    this.client.publish('order/finish');
   }
   /**
    * Resets the lights and clears ingredients that have been added.
@@ -95,6 +97,7 @@ class OrderChecker {
     this.lightArray = _.fill(Array(LIGHTS_SIZE), OFF);
     this.untrackedIngredients = [];
     this.init();
+    this.client.publish('order/reset');
   }
   /**
    * Checks if the ingredient is in the current build.
