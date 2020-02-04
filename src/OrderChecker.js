@@ -70,6 +70,15 @@ class OrderChecker {
     this.publishLightsArray();
   }
   /**
+   * Resets the lights and clears ingredients that have been added.
+   */
+  resetOrder() {
+    this.addedIngredients = [];
+    this.lightArray = _.fill(Array(LIGHTS_SIZE), OFF);
+    this.untrackedIngredients = [];
+    this.init();
+  }
+  /**
    * Checks order accuracy by comparing ingredients that were added to the original build.
    */
   checkAccuracy() {

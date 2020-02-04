@@ -28,6 +28,13 @@ class OrderManager {
       return {message: 'no order in progress'};
     }
   }
+  resetOrder() {
+    if (this.currentOrder) {
+      this.currentOrder.resetOrder();
+    } else {
+      return {message: 'no order in progress'};
+    }
+  }
   updateIngredientToContainerMapping(ingredientToContainerMapping) {
     this.ingredientToContainerMapping = ingredientToContainerMapping;
   }

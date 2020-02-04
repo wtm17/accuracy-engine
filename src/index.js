@@ -42,4 +42,12 @@ app.post('/order/finish', (req, res) => {
   console.log('finish body', req.body);
   res.json(orderManager.finishOrder());
 })
+/**
+ * Endpoint to finish order.
+ */
+app.post('/order/reset', (req, res) => {
+  console.log('reset body', req.body);
+  orderManager.resetOrder();
+  res.json({success: true});
+})
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
