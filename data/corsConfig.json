@@ -1,0 +1,15 @@
+{
+  "allowedHeaders": [
+    "Origin",
+    "X-Request-With",
+    "Content-Type",
+    "Accept",
+    "Access-Control-Request-Method",
+    "Access-Control-Request-Headers",
+    "Accept-Language"
+  ],
+  "credentials": true,
+  "methods": "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+  "origin": "*",
+  "preflightContinue": false
+}

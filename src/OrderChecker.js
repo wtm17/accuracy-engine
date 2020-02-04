@@ -6,6 +6,9 @@ const ON = [255, 255, 255];
 const CONTAINER_TO_LIGHTS_MAPPING = require('../data/containerToLightsMapping.json');
 const INGREDIENT_TO_COTAINER_MAPPING = require('../data/ingredientToContainerMapping.json');
 
+/**
+ * Class for keeping track of the accuracy of the order.
+ */
 class OrderChecker {
   constructor(req, client) {
     this.referenceId = req.referenceId;
@@ -14,16 +17,23 @@ class OrderChecker {
     this.lightArray = _.fill(Array(LIGHTS_SIZE), OFF);
     this.untrackedIngredients = [];
     this.client = client;
+    this.init();
   }
-
-  generateLightsArray() {
+  /**
+   * Turns on the corresponding lights for each ingredient.
+   */
+  init() {
     for (const ingredient of this.ingredients) {
-      this.fillLightArray(ingredient, ON);
+      this.controlIngredientLights(ingredient, ON);
     }
     this.publishLightsArray();
   }
-
-  fillLightArray(ingredient, value) {
+  /**
+   * Turns on or off the corresponding lights for each ingredient.
+   * @param {*} ingredient 
+   * @param {*} value 
+   */
+  controlIngredientLights(ingredient, value) {
     const container = _.find(INGREDIENT_TO_COTAINER_MAPPING, {
       ingredient: ingredient.name,
     });
@@ -40,21 +50,28 @@ class OrderChecker {
       this.untrackedIngredients.push(ingredient);
     }
   }
-
+  /**
+   * Turns off the light for the ingredient.
+   * @param {*} ingredient 
+   */
   addIngredient(ingredient) {
     const ingredientToAdd = {
       name: ingredient.ingredient,
     }
     this.addedIngredients.push(ingredientToAdd);
-    this.fillLightArray(ingredientToAdd, OFF);
+    this.controlIngredientLights(ingredientToAdd, OFF);
     this.publishLightsArray();
   }
-
-  clearLights() {
+  /**
+   * Turns off all lights.
+   */
+  shutdown() {
     this.lightArray = _.fill(Array(LIGHTS_SIZE), OFF);
     this.publishLightsArray();
   }
-
+  /**
+   * Checks order accuracy by comparing ingredients that were added to the original build.
+   */
   checkAccuracy() {
     let missingIngredients =  _.differenceBy(this.ingredients, this.addedIngredients, 'name');
     // Remove untracked ingredients
@@ -64,9 +81,11 @@ class OrderChecker {
       wrongIngredients: _.differenceBy(this.addedIngredients, this.ingredients, 'name'),
     };
   }
-
+  /**
+   * Publishes lights array to the client.
+   */
   publishLightsArray() {
-    console.log('lights array', this.lightArray);
+    console.log('publishing lights array', this.lightArray);
     this.client.publish('lights/control', JSON.stringify(this.lightArray));
   }
 }
