@@ -2,7 +2,8 @@ const _ = require('lodash')
 const LIGHTS_SIZE = 300;
 const OFF = [0, 0, 0];
 const ON = [255, 255, 255];
-const WRONG = [226, 72, 68];
+const WRONG = [255, 0, 0];
+const WRONG_SIGNAL_TIMEOUT = 2000;
 
 const CONTAINER_TO_LIGHTS_MAPPING = require('../data/containerToLightsMapping.json');
 
@@ -67,6 +68,11 @@ class OrderChecker {
       // Indicate that the ingredient is incorrect
       console.log('Incorrect ingredient added', ingredientToAdd.name);
       this.controlIngredientLights(ingredientToAdd, WRONG);
+      // Turn off incorrect light after timeout
+      setTimeout(() => {
+        this.controlIngredientLights(ingredientToAdd, OFF);
+        this.publishLightsArray();
+      }, WRONG_SIGNAL_TIMEOUT);
     }
     this.publishLightsArray();
   }
@@ -111,7 +117,7 @@ class OrderChecker {
    * Publishes lights array to the client.
    */
   publishLightsArray() {
-    console.log('publishing lights array');
+    console.log('publishing lights array', JSON.stringify(this.lightArray));
     this.client.publish('lights/control', JSON.stringify(this.lightArray));
   }
 }
