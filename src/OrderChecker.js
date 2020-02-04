@@ -2,6 +2,7 @@ const _ = require('lodash')
 const LIGHTS_SIZE = 300;
 const OFF = [0, 0, 0];
 const ON = [255, 255, 255];
+const WRONG = [226, 72, 68];
 
 const CONTAINER_TO_LIGHTS_MAPPING = require('../data/containerToLightsMapping.json');
 
@@ -42,7 +43,8 @@ class OrderChecker {
         container: container.container,
       });
       if (lightsRange) {
-        console.log('Turn', value === ON ? 'ON' : 'OFF', ingredient.name, 'in container', container.container, '(min:', lightsRange.min, 'max:', lightsRange.max, ')');
+        console.log('Turn', value === ON ? 'ON' : value === OFF ? 'OFF' : 'WRONG', ingredient.name,
+          'in container', container.container, '(min:', lightsRange.min, 'max:', lightsRange.max, ')');
         _.fill(this.lightArray, value, lightsRange.min, lightsRange.max + 1);
       }
     } else {
@@ -59,7 +61,13 @@ class OrderChecker {
       name: ingredient.ingredient,
     }
     this.addedIngredients.push(ingredientToAdd);
-    this.controlIngredientLights(ingredientToAdd, OFF);
+    if (this.buildContainsIngredient(ingredientToAdd)) {
+      this.controlIngredientLights(ingredientToAdd, OFF);
+    } else {
+      // Indicate that the ingredient is incorrect
+      console.log('Incorrect ingredient added', ingredientToAdd.name);
+      this.controlIngredientLights(ingredientToAdd, WRONG);
+    }
     this.publishLightsArray();
   }
   /**
@@ -77,6 +85,15 @@ class OrderChecker {
     this.lightArray = _.fill(Array(LIGHTS_SIZE), OFF);
     this.untrackedIngredients = [];
     this.init();
+  }
+  /**
+   * Checks if the ingredient is in the current build.
+   * @param {*} ingredient 
+   */
+  buildContainsIngredient(ingredient) {
+    return _.some(this.ingredients, (ing) => {
+      return ing.name === ingredient.name;
+    });
   }
   /**
    * Checks order accuracy by comparing ingredients that were added to the original build.
