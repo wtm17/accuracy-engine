@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const LIGHTS_SIZE = 300;
+const LIGHTS_SIZE = 288;
 const OFF = [0, 0, 0];
 const ON = [255, 255, 255];
 const WRONG = [255, 0, 0];

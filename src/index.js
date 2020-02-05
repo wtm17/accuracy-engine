@@ -50,4 +50,11 @@ app.post('/order/reset', (req, res) => {
   orderManager.resetOrder();
   res.json({success: true});
 })
+/**
+ * Endpoint to test all containers
+ */
+app.post('/test/containers', (req, res) => {
+    orderManager.testAllContainers(client);
+    res.json({success: true});
+});
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
