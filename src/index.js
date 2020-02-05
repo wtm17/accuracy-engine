@@ -25,6 +25,7 @@ app.post('/order/start', (req, res) => {
 app.post('/ingredient/add', (req, res) => {
   console.log('ingredient add body', req.body);
   orderManager.addIngredient(req.body);
+  client.publish('ingredient/pulled', JSON.stringify(req.body));
   res.json({success: true})
 })
 /**
@@ -33,6 +34,7 @@ app.post('/ingredient/add', (req, res) => {
 app.post('/ingredient/setup', (req, res) => {
   console.log('ingredient setup body', req.body);
   orderManager.updateIngredientToContainerMapping(req.body);
+  client.publish('ingredient/setup', JSON.stringify(req.body));
   res.json({success: true})
 })
 /**
