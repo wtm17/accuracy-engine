@@ -48,9 +48,9 @@ app.post('/order/finish', (req, res) => {
  * Endpoint to finish order.
  */
 app.post('/order/reset', (req, res) => {
-  console.log('reset body', req.body);
-  orderManager.resetOrder();
-  res.json({success: true});
+  // console.log('reset body', req.body);
+  // orderManager.resetOrder();
+  // res.json({success: true});
 })
 /**
  * Endpoint to test all containers
